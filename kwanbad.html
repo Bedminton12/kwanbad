@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ก๊วนตีลูกขนไก่ 🏸</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
+
+  :root {
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --green-dark: #15803d;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --gray: #6b7280;
+    --gray-light: #f3f4f6;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --bg: #f0fdf4;
+    --card: #ffffff;
+    --text: #111827;
+    --text-2: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 16px;
+  }
+
+  .header {
+    background: var(--green);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .header h1 { font-size: 20px; font-weight: 700; }
+  .header-sub { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+
+  .admin-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Sarabun', sans-serif;
+  }
+
+  .page { display: none; padding: 16px 20px; max-width: 600px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  .card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: 'Sarabun', sans-serif;
+    background: var(--gray-light);
+    margin-bottom: 10px;
+    outline: none;
+    transition: border 0.2s;
+  }
+
+  input:focus, select:focus { border-color: var(--green); background: white; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn:active { transform: scale(0.97); }
+  .btn-green { background: var(--green); color: white; }
+  .btn-green:hover { background: var(--green-dark); }
+  .btn-amber { background: var(--amber); color: white; }
+  .btn-red { background: var(--red); color: white; }
+  .btn-gray { background: #e5e7eb; color: #374151; }
+  .btn-blue { background: var(--blue); color: white; }
+  .btn-sm {
+    display: inline-block;
+    width: auto;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+  .badge-amber { background: var(--amber-light); color: #92400e; }
+  .badge-blue { background: var(--blue-light); color: #1e40af; }
+  .badge-gray { background: var(--gray-light); color: var(--gray); }
+  .badge-red { background: var(--red-light); color: #991b1b; }
+
+  .player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .player-row:last-child { border-bottom: none; }
+
+  .player-name { font-weight: 600; font-size: 15px; }
+  .player-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+  .court-card {
+    background: var(--card);
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    padding: 14px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .court-card.playing { border-color: var(--green); }
+  .court-card.waiting { border-color: var(--amber); }
+
+  .court-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .court-num {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .court-players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .court-player {
+    background: var(--gray-light);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .court-player .cp-name { font-weight: 600; }
+  .court-player .cp-level { font-size: 11px; color: var(--text-2); }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-num { font-size: 28px; font-weight: 700; }
+  .stat-label { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+
+  .stat-num.green { color: var(--green); }
+  .stat-num.amber { color: var(--amber); }
+  .stat-num.blue { color: var(--blue); }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 16px 0 8px;
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+
+  .court-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .court-toggle {
+    aspect-ratio: 1;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    background: white;
+    transition: all 0.15s;
+    color: var(--text-2);
+  }
+
+  .court-toggle.on {
+    background: var(--green-light);
+    border-color: var(--green);
+    color: var(--green-dark);
+  }
+
+  .checkin-success {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+  }
+
+  .checkin-success.show { display: block; }
+
+  .success-icon {
+    font-size: 64px;
+    margin-bottom: 12px;
+  }
+
+  .tab-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    background: white;
+    color: var(--text-2);
+    transition: all 0.15s;
+  }
+
+  .tab.active {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-2);
+    font-size: 14px;
+  }
+
+  .pin-dots {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    transition: background 0.1s;
+  }
+
+  .pin-dot.filled { background: var(--green); border-color: var(--green); }
+
+  .pin-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .pin-key {
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    background: white;
+    font-family: 'Sarabun', sans-serif;
+    transition: all 0.1s;
+  }
+
+  .pin-key:active { background: var(--green-light); border-color: var(--green); }
+
+  .danger-zone { border: 1px solid var(--red-light); border-radius: 10px; padding: 12px; margin-top: 8px; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1f2937;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .level-select {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .level-btn {
+    padding: 10px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s;
+    background: white;
+  }
+
+  .level-btn.selected-new { background: var(--green-light); border-color: var(--green); color: var(--green-dark); }
+  .level-btn.selected-mid { background: var(--amber-light); border-color: var(--amber); color: #92400e; }
+  .level-btn.selected-pro { background: var(--red-light); border-color: var(--red); color: #991b1b; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+  .court-action-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header h1" style="font-size:20px;font-weight:700;">🏸 ก๊วนตีลูกขนไก่</div>
+    <div class="header-sub" id="header-sub">เช็คอินได้เลย</div>
+  </div>
+  <button class="admin-btn" onclick="showAdminLogin()">⚙️ แอดมิน</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== MAIN PAGE ===== -->
+<div class="page active" id="page-main">
+
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div class="stat-num amber" id="stat-waiting">0</div>
+      <div class="stat-label">รอคิว</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num green" id="stat-playing">0</div>
+      <div class="stat-label">กำลังเล่น</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num blue" id="stat-played">0</div>
+      <div class="stat-label">เล่นแล้ว</div>
+    </div>
+  </div>
+
+  <!-- Check-in form -->
+  <div class="card" id="checkin-form-card">
+    <div class="card-title">✏️ ลงทะเบียนเข้าก๊วน</div>
+    <input type="text" id="input-name" placeholder="ชื่อเล่น" maxlength="20" />
+    <div class="level-select">
+      <div class="level-btn" id="lvl-new" onclick="selectLevel('new')">🌱 มือใหม่</div>
+      <div class="level-btn" id="lvl-mid" onclick="selectLevel('mid')">⚡ มือกลาง</div>
+      <div class="level-btn" id="lvl-pro" onclick="selectLevel('pro')">🔥 มือแข็ง</div>
+    </div>
+    <button class="btn btn-green" onclick="checkIn()">✅ เช็คอินเข้าก๊วน</button>
+  </div>
+
+  <!-- Success -->
+  <div class="checkin-success" id="checkin-success">
+    <div class="success-icon">🏸</div>
+    <div style="font-size:22px;font-weight:700;margin-bottom:8px;">เช็คอินสำเร็จ!</div>
+    <div id="success-name" style="font-size:16px;color:var(--text-2);margin-bottom:16px;"></div>
+    <div style="background:var(--amber-light);border-radius:10px;padding:12px;font-size:14px;color:#92400e;margin-bottom:16px;">
+      ⏳ รอแอดมินสุ่มคอร์ดนะ
+    </div>
+    <button class="btn btn-gray" onclick="showCheckinForm()" style="width:auto;padding:8px 24px;display:inline-block;">+ ลงชื่อคนใหม่</button>
+  </div>
+
+  <!-- Courts currently playing -->
+  <div id="courts-section"></div>
+
+  <!-- Queue -->
+  <div id="queue-section"></div>
+
+  <!-- Played -->
+  <div id="played-section"></div>
+</div>
+
+<!-- ===== ADMIN PAGE ===== -->
+<div class="page" id="page-admin">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div style="font-size:18px;font-weight:700;">⚙️ หลังบ้านแอดมิน</div>
+    <button class="btn btn-gray btn-sm" onclick="logout()">ออก</button>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('tab-courts')">🏟️ คอร์ด</div>
+    <div class="tab" onclick="switchTab('tab-players')">👥 ผู้เล่น</div>
+    <div class="tab" onclick="switchTab('tab-settings')">⚙️ ตั้งค่า</div>
+  </div>
+
+  <!-- TAB: Courts -->
+  <div class="tab-content active" id="tab-courts">
+
+    <div class="card">
+      <div class="card-title">🏟️ เปิด/ปิดคอร์ด</div>
+      <div class="court-toggle-grid" id="court-toggles"></div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:12px;">กดเพื่อเปิด/ปิดคอร์ด</div>
+      <button class="btn btn-green" onclick="shuffleAll()">🎲 สุ่มคอร์ดทั้งหมด</button>
+    </div>
+
+    <div id="admin-courts"></div>
+  </div>
+
+  <!-- TAB: Players -->
+  <div class="tab-content" id="tab-players">
+    <div class="card">
+      <div class="card-title">👥 รายชื่อผู้เล่นทั้งหมด</div>
+      <div id="all-players-list"></div>
+    </div>
+    <div class="card">
+      <div class="danger-zone">
+        <div style="font-weight:600;color:var(--red);margin-bottom:8px;">🗑️ รีเซ็ตข้อมูล</div>
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:10px;">ล้างรายชื่อผู้เล่นทั้งหมด เริ่มก๊วนใหม่</div>
+        <button class="btn btn-red" onclick="resetAll()">รีเซ็ตทั้งหมด</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Settings -->
+  <div class="tab-content" id="tab-settings">
+    <div class="card">
+      <div class="card-title">💰 ตั้งค่าค่าใช้จ่าย</div>
+      <label style="font-size:13px;color:var(--text-2);">ค่าคอร์ต (บาท/ชั่วโมง/คอร์ด)</label>
+      <input type="number" id="setting-court-fee" placeholder="เช่น 100" onchange="saveSettings()" />
+      <label style="font-size:13px;color:var(--text-2);">ราคาลูกขนไก่ (บาท/ลูก)</label>
+      <input type="number" id="setting-shuttle-fee" placeholder="เช่น 15" onchange="saveSettings()" />
+      <label style="font-size:13px;color:var(--text-2);">จำนวนลูกที่ใช้วันนี้</label>
+      <input type="number" id="setting-shuttles-used" placeholder="0" onchange="saveSettings()" />
+      <hr>
+      <div id="cost-summary" style="font-size:14px;line-height:1.8;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📤 แชร์ลิงก์</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:10px;">คัดลอกลิงก์นี้ส่งในกลุ่ม LINE</div>
+      <div id="share-url" style="background:var(--gray-light);border-radius:8px;padding:10px;font-size:12px;word-break:break-all;margin-bottom:10px;"></div>
+      <button class="btn btn-blue" onclick="copyLink()">📋 คัดลอกลิงก์</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PIN MODAL ===== -->
+<div class="modal-overlay" id="pin-modal">
+  <div class="modal" style="text-align:center;">
+    <h2>🔐 ใส่รหัส PIN</h2>
+    <div class="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+    </div>
+    <div id="pin-error" style="color:var(--red);font-size:13px;height:16px;margin-bottom:8px;"></div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" onclick="pinPress('clear')" style="font-size:14px;color:var(--red);">✕</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinPress('back')" style="font-size:14px;">⌫</button>
+    </div>
+    <button class="btn btn-gray" onclick="closePinModal()" style="margin-top:16px;">ยกเลิก</button>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const PIN = '1234';
+const COURTS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+const LEVEL_SCORE = { new: 1, mid: 2, pro: 3 };
+const LEVEL_LABEL = { new: '🌱 มือใหม่', mid: '⚡ มือกลาง', pro: '🔥 มือแข็ง' };
+
+let state = {
+  players: [],
+  openCourts: [],
+  courtAssignments: {},
+  pairHistory: {},
+  settings: { courtFee: 0, shuttleFee: 0, shuttlesUsed: 0 }
+};
+
+let selectedLevel = null;
+let pinBuffer = '';
+
+function loadState() {
+  const saved = localStorage.getItem('kwanbad_state');
+  if (saved) {
+    try { state = JSON.parse(saved); } catch(e) {}
+  }
+}
+
+function saveState() {
+  localStorage.setItem('kwanbad_state', JSON.stringify(state));
+}
+
+// ===== INIT =====
+loadState();
+renderAll();
+
+// ===== CHECK-IN =====
+function selectLevel(lvl) {
+  selectedLevel = lvl;
+  document.getElementById('lvl-new').className = 'level-btn' + (lvl === 'new' ? ' selected-new' : '');
+  document.getElementById('lvl-mid').className = 'level-btn' + (lvl === 'mid' ? ' selected-mid' : '');
+  document.getElementById('lvl-pro').className = 'level-btn' + (lvl === 'pro' ? ' selected-pro' : '');
+}
+
+function checkIn() {
+  const name = document.getElementById('input-name').value.trim();
+  if (!name) { showToast('⚠️ ใส่ชื่อเล่นด้วยนะ'); return; }
+  if (!selectedLevel) { showToast('⚠️ เลือกระดับมือด้วยนะ'); return; }
+
+  const exists = state.players.find(p => p.name.toLowerCase() === name.toLowerCase() && p.status !== 'left');
+  if (exists) { showToast('⚠️ มีชื่อนี้อยู่แล้ว'); return; }
+
+  const player = {
+    id: Date.now().toString(),
+    name,
+    level: selectedLevel,
+    status: 'waiting',
+    gamesPlayed: 0,
+    courtId: null,
+    checkInTime: Date.now()
+  };
+
+  state.players.push(player);
+  saveState();
+
+  document.getElementById('success-name').textContent = `${name} • ${LEVEL_LABEL[selectedLevel]}`;
+  document.getElementById('checkin-form-card').style.display = 'none';
+  document.getElementById('checkin-success').classList.add('show');
+
+  document.getElementById('input-name').value = '';
+  selectLevel(null);
+  selectedLevel = null;
+
+  renderAll();
+}
+
+function showCheckinForm() {
+  document.getElementById('checkin-form-card').style.display = 'block';
+  document.getElementById('checkin-success').classList.remove('show');
+}
+
+// ===== RENDER MAIN =====
+function renderAll() {
+  renderStats();
+  renderCourtsSection();
+  renderQueueSection();
+  renderPlayedSection();
+  if (document.getElementById('page-admin').classList.contains('active')) {
+    renderAdminCourts();
+    renderAllPlayersList();
+    renderCourtToggles();
+    renderCostSummary();
+  }
+  const sub = `วันนี้มีผู้เล่น ${state.players.length} คน`;
+  const subEl = document.getElementById('header-sub');
+  if (subEl) subEl.textContent = sub;
+}
+
+function renderStats() {
+  const waiting = state.players.filter(p => p.status === 'waiting').length;
+  const playing = state.players.filter(p => p.status === 'playing').length;
+  const played = state.players.filter(p => p.status === 'played').length;
+  document.getElementById('stat-waiting').textContent = waiting;
+  document.getElementById('stat-playing').textContent = playing;
+  document.getElementById('stat-played').textContent = played;
+}
+
+function renderCourtsSection() {
+  const el = document.getElementById('courts-section');
+  const activeCourts = Object.keys(state.courtAssignments);
+  if (activeCourts.length === 0) { el.innerHTML = ''; return; }
+
+  let html = '<div class="section-title">🏟️ คอร์ดที่กำลังเล่น</div>';
+  activeCourts.forEach(courtId => {
+    const assignment = state.courtAssignments[courtId];
+    const players = assignment.players || [];
+    const isWaiting = players.length < 4;
+
+    html += `<div class="court-card ${isWaiting ? 'waiting' : 'playing'}">
+      <div class="court-header">
+        <div class="court-num">คอร์ด ${courtId}</div>
+        <span class="badge ${isWaiting ? 'badge-amber' : 'badge-green'}">${isWaiting ? '⏳ รอผู้เล่นเพิ่ม' : '🏸 กำลังเล่น'}</span>
+      </div>
+      <div class="court-players">`;
+
+    if (players.length === 0) {
+      html += `<div style="grid-column:1/-1;text-align:center;color:var(--text-2);font-size:13px;padding:8px;">ไม่มีผู้เล่น</div>`;
+    } else {
+      players.forEach(pid => {
+        const p = state.players.find(x => x.id === pid);
+        if (p) {
+          html += `<div class="court-player">
+            <div class="cp-name">${p.name}</div>
+            <div class="cp-level">${LEVEL_LABEL[p.level]}</div>
+          </div>`;
+        }
+      });
+      for (let i = players.length; i < 4; i++) {
+        html += `<div class="court-player" style="opacity:0.4;border:1px dashed var(--border);">
+          <div class="cp-name" style="color:var(--text-2);">รอผู้เล่น</div>
+        </div>`;
+      }
+    }
+    html += `</div></div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function renderQueueSection() {
+  const el = document.getElementById('queue-section');
+  const waiting = state.players
+    .filter(p => p.status === 'waiting')
+    .sort((a, b) => a.gamesPlayed - b.gamesPlayed || a.checkInTime - b.checkInTime);
+
+  if (waiting.length === 0) { el.innerHTML = ''; return; }
+
+  let html = `<div class="section-title">⏳ รอคิว (${waiting.length} คน)</div><div class="card">`;
+  waiting.forEach((p, i) => {
+    html += `<div class="player-row">
+      <div>
+        <div class="player-name">${i + 1}. ${p.name}</div>
+        <div class="player-meta">${LEVEL_LABEL[p.level]} • เล่นไปแล้ว ${p.gamesPlayed} รอบ</div>
+      </div>
+      <span class="badge badge-amber">รอคิว</span>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function renderPlayedSection() {
+  const el = document.getElementById('played-section');
+  const played = state.players
+    .filter(p => p.status === 'played')
+    .sort((a, b) => b.gamesPlayed - a.gamesPlayed);
+
+  if (played.length === 0) { el.innerHTML = ''; return; }
+
+  let html = `<div class="section-title">✅ เล่นแล้ว (${played.length} คน)</div><div class="card">`;
+  played.forEach(p => {
+    html += `<div class="player-row">
+      <div>
+        <div class="player-name">${p.name}</div>
+        <div class="player-meta">${LEVEL_LABEL[p.level]} • เล่นไปแล้ว ${p.gamesPlayed} รอบ</div>
+      </div>
+      <span class="badge badge-blue">${p.gamesPlayed} รอบ</span>
+    </div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// ===== ALGORITHM =====
+function getPairKey(a, b) {
+  return [a, b].sort().join('_');
+}
+
+function getPairCount(a, b) {
+  const key = getPairKey(a, b);
+  return state.pairHistory[key] || 0;
+}
+
+function recordPairs(playerIds) {
+  for (let i = 0; i < playerIds.length; i++) {
+    for (let j = i + 1; j < playerIds.length; j++) {
+      const key = getPairKey(playerIds[i], playerIds[j]);
+      state.pairHistory[key] = (state.pairHistory[key] || 0) + 1;
+    }
+  }
+}
+
+function shuffleCourt(courtId, waitingPlayers) {
+  if (waitingPlayers.length === 0) return null;
+  if (waitingPlayers.length < 4) {
+    return { courtId, players: waitingPlayers.map(p => p.id), partial: true };
+  }
+
+  const pool = [...waitingPlayers];
+  let bestGroup = null;
+  let bestScore = Infinity;
+
+  // Try 30 random combinations to find best
+  for (let attempt = 0; attempt < 50; attempt++) {
+    // Pick 4 players with priority weighting
+    const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+    // Bias toward lower gamesPlayed
+    shuffled.sort((a, b) => {
+      const weightA = a.gamesPlayed + Math.random() * 2;
+      const weightB = b.gamesPlayed + Math.random() * 2;
+      return weightA - weightB;
+    });
+    const group = shuffled.slice(0, 4);
+    const ids = group.map(p => p.id);
+
+    // Score: lower = better
+    let pairScore = 0;
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        pairScore += getPairCount(ids[i], ids[j]);
+      }
+    }
+
+    // Skill balance: ideally 2 strong + 2 weak, or mixed
+    const levels = group.map(p => LEVEL_SCORE[p.level]);
+    const avgLevel = levels.reduce((a, b) => a + b, 0) / 4;
+    const variance = levels.reduce((a, b) => a + Math.abs(b - avgLevel), 0);
+    const balanceScore = Math.abs(variance - 2); // ideal variance ~2
+
+    const totalScore = pairScore * 3 + balanceScore;
+
+    if (totalScore < bestScore) {
+      bestScore = totalScore;
+      bestGroup = group;
+    }
+  }
+
+  return { courtId, players: bestGroup.map(p => p.id), partial: false };
+}
+
+function shuffleAll() {
+  if (state.openCourts.length === 0) {
+    showToast('⚠️ เปิดคอร์ดก่อนนะ');
+    return;
+  }
+
+  const waiting = state.players
+    .filter(p => p.status === 'waiting')
+    .sort((a, b) => a.gamesPlayed - b.gamesPlayed || a.checkInTime - b.checkInTime);
+
+  if (waiting.length === 0) {
+    showToast('⚠️ ไม่มีผู้เล่นในคิว');
+    return;
+  }
+
+  // Reset current assignments
+  Object.keys(state.courtAssignments).forEach(cid => {
+    const asgn = state.courtAssignments[cid];
+    asgn.players.forEach(pid => {
+      const p = state.players.find(x => x.id === pid);
+      if (p && p.status === 'playing') {
+        p.status = 'waiting';
+        p.courtId = null;
+      }
+    });
+  });
+  state.courtAssignments = {};
+
+  let remainingWaiting = state.players
+    .filter(p => p.status === 'waiting')
+    .sort((a, b) => a.gamesPlayed - b.gamesPlayed || a.checkInTime - b.checkInTime);
+
+  state.openCourts.forEach(courtId => {
+    if (remainingWaiting.length === 0) return;
+
+    const take = Math.min(4, remainingWaiting.length);
+    const result = shuffleCourt(courtId.toString(), remainingWaiting.slice(0, Math.max(take, remainingWaiting.length)));
+
+    if (result) {
+      const assignedIds = result.players;
+      state.courtAssignments[courtId] = { players: assignedIds };
+      assignedIds.forEach(pid => {
+        const p = state.players.find(x => x.id === pid);
+        if (p) { p.status = 'playing'; p.courtId = courtId; }
+      });
+      remainingWaiting = remainingWaiting.filter(p => !assignedIds.includes(p.id));
+    }
+  });
+
+  saveState();
+  renderAll();
+  showToast('🎲 สุ่มคอร์ดเสร็จแล้ว!');
+}
+
+function endCourt(courtId) {
+  const asgn = state.courtAssignments[courtId];
+  if (!asgn) return;
+
+  // Record pairs
+  recordPairs(asgn.players);
+
+  // Update player status
+  asgn.players.forEach(pid => {
+    const p = state.players.find(x => x.id === pid);
+    if (p) {
+      p.status = 'played';
+      p.gamesPlayed += 1;
+      p.courtId = null;
+    }
+  });
+
+  // Auto-fill from waiting queue
+  const waiting = state.players
+    .filter(p => p.status === 'waiting')
+    .sort((a, b) => a.gamesPlayed - b.gamesPlayed || a.checkInTime - b.checkInTime);
+
+  if (waiting.length >= 4) {
+    const allWaiting = state.players
+      .filter(p => p.status === 'waiting')
+      .sort((a, b) => a.gamesPlayed - b.gamesPlayed || a.checkInTime - b.checkInTime);
+
+    const result = shuffleCourt(courtId.toString(), allWaiting);
+    if (result && result.players.length === 4) {
+      state.courtAssignments[courtId] = { players: result.players };
+      result.players.forEach(pid => {
+        const p = state.players.find(x => x.id === pid);
+        if (p) { p.status = 'playing'; p.courtId = courtId; }
+      });
+      showToast(`✅ คอร์ด ${courtId} จบเกม → สุ่มทีมใหม่แล้ว!`);
+    } else {
+      delete state.courtAssignments[courtId];
+      showToast(`✅ คอร์ด ${courtId} จบเกม`);
+    }
+  } else if (waiting.length > 0) {
+    state.courtAssignments[courtId] = { players: waiting.map(p => p.id) };
+    waiting.forEach(p => { p.status = 'playing'; p.courtId = courtId; });
+    showToast(`✅ คอร์ด ${courtId} จบเกม → รอผู้เล่นเพิ่ม`);
+  } else {
+    delete state.courtAssignments[courtId];
+    showToast(`✅ คอร์ด ${courtId} จบเกม`);
+  }
+
+  saveState();
+  renderAll();
+}
+
+function returnToQueue(pid) {
+  const p = state.players.find(x => x.id === pid);
+  if (!p) return;
+
+  if (p.courtId && state.courtAssignments[p.courtId]) {
+    state.courtAssignments[p.courtId].players = state.courtAssignments[p.courtId].players.filter(id => id !== pid);
+    if (state.courtAssignments[p.courtId].players.length === 0) {
+      delete state.courtAssignments[p.courtId];
+    }
+  }
+  p.status = 'waiting';
+  p.courtId = null;
+  saveState();
+  renderAll();
+}
+
+function removePlayer(pid) {
+  if (!confirm('ลบผู้เล่นนี้ออกจากก๊วน?')) return;
+  const p = state.players.find(x => x.id === pid);
+  if (p && p.courtId && state.courtAssignments[p.courtId]) {
+    state.courtAssignments[p.courtId].players = state.courtAssignments[p.courtId].players.filter(id => id !== pid);
+  }
+  state.players = state.players.filter(x => x.id !== pid);
+  saveState();
+  renderAll();
+}
+
+// ===== ADMIN RENDER =====
+function renderCourtToggles() {
+  const el = document.getElementById('court-toggles');
+  if (!el) return;
+  let html = '';
+  COURTS.forEach(c => {
+    const on = state.openCourts.includes(c);
+    html += `<div class="court-toggle ${on ? 'on' : ''}" onclick="toggleCourt(${c})">${c}</div>`;
+  });
+  el.innerHTML = html;
+}
+
+function toggleCourt(c) {
+  if (state.openCourts.includes(c)) {
+    state.openCourts = state.openCourts.filter(x => x !== c);
+  } else {
+    state.openCourts.push(c);
+    state.openCourts.sort((a, b) => a - b);
+  }
+  saveState();
+  renderCourtToggles();
+}
+
+function renderAdminCourts() {
+  const el = document.getElementById('admin-courts');
+  if (!el) return;
+
+  if (state.openCourts.length === 0) {
+    el.innerHTML = '<div class="empty-state">เปิดคอร์ดก่อนนะ 👆</div>';
+    return;
+  }
+
+  let html = '';
+  state.openCourts.forEach(courtId => {
+    const asgn = state.courtAssignments[courtId];
+    const players = asgn ? asgn.players : [];
+    const isWaiting = players.length < 4;
+
+    html += `<div class="court-card ${isWaiting ? 'waiting' : 'playing'}">
+      <div class="court-header">
+        <div class="court-num">คอร์ด ${courtId}</div>
+        <span class="badge ${isWaiting ? 'badge-amber' : 'badge-green'}">${isWaiting ? '⏳ รอผู้เล่น' : '🏸 กำลังเล่น'}</span>
+      </div>`;
+
+    if (players.length > 0) {
+      html += '<div class="court-players">';
+      players.forEach(pid => {
+        const p = state.players.find(x => x.id === pid);
+        if (p) {
+          html += `<div class="court-player" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div class="cp-name">${p.name}</div>
+              <div class="cp-level">${LEVEL_LABEL[p.level]}</div>
+            </div>
+            <button onclick="returnToQueue('${p.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;" title="ส่งกลับคิว">↩️</button>
+          </div>`;
+        }
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="empty-state" style="padding:8px;">ยังไม่ได้สุ่ม</div>';
+    }
+
+    html += `<div class="court-action-row">
+      <button class="btn btn-red btn-sm" onclick="endCourt(${courtId})">🏁 จบคอร์ดนี้</button>
+    </div>
+    </div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function renderAllPlayersList() {
+  const el = document.getElementById('all-players-list');
+  if (!el) return;
+
+  if (state.players.length === 0) {
+    el.innerHTML = '<div class="empty-state">ยังไม่มีผู้เล่น</div>';
+    return;
+  }
+
+  const sorted = [...state.players].sort((a, b) => {
+    const statusOrder = { playing: 0, waiting: 1, played: 2 };
+    return (statusOrder[a.status] - statusOrder[b.status]) || a.gamesPlayed - b.gamesPlayed;
+  });
+
+  let html = '';
+  sorted.forEach(p => {
+    const badgeClass = p.status === 'playing' ? 'badge-green' : p.status === 'waiting' ? 'badge-amber' : 'badge-blue';
+    const statusTh = p.status === 'playing' ? 'กำลังเล่น' : p.status === 'waiting' ? 'รอคิว' : 'เล่นแล้ว';
+    html += `<div class="player-row">
+      <div>
+        <div class="player-name">${p.name}</div>
+        <div class="player-meta">${LEVEL_LABEL[p.level]} • ${p.gamesPlayed} รอบ ${p.courtId ? `• คอร์ด ${p.courtId}` : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="badge ${badgeClass}">${statusTh}</span>
+        <button onclick="removePlayer('${p.id}')" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:18px;">×</button>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function renderCostSummary() {
+  const el = document.getElementById('cost-summary');
+  if (!el) return;
+
+  const s = state.settings;
+  document.getElementById('setting-court-fee').value = s.courtFee || '';
+  document.getElementById('setting-shuttle-fee').value = s.shuttleFee || '';
+  document.getElementById('setting-shuttles-used').value = s.shuttlesUsed || '';
+
+  const totalPlayers = state.players.length;
+  if (totalPlayers === 0 || (!s.courtFee && !s.shuttleFee)) {
+    el.innerHTML = '<div style="color:var(--text-2);">ใส่ค่าใช้จ่ายด้านบนเพื่อคำนวณ</div>';
+    return;
+  }
+
+  const totalGames = state.players.reduce((sum, p) => sum + p.gamesPlayed, 0);
+  const shuttleCost = (s.shuttleFee || 0) * (s.shuttlesUsed || 0);
+  const courtCost = (s.courtFee || 0) * state.openCourts.length;
+  const totalCost = courtCost + shuttleCost;
+  const perPerson = totalPlayers > 0 ? Math.ceil(totalCost / totalPlayers) : 0;
+
+  el.innerHTML = `
+    <div style="background:var(--green-light);border-radius:10px;padding:12px;margin-bottom:8px;">
+      <div style="font-size:18px;font-weight:700;color:var(--green-dark);">คนละ ${perPerson.toLocaleString()} บาท</div>
+      <div style="font-size:12px;color:var(--green-dark);opacity:0.8;margin-top:4px;">รวม ${totalPlayers} คน</div>
+    </div>
+    <div style="font-size:13px;color:var(--text-2);">
+      ค่าคอร์ต: ${courtCost.toLocaleString()} บาท<br>
+      ค่าลูก: ${shuttleCost.toLocaleString()} บาท (${s.shuttlesUsed || 0} ลูก)<br>
+      <strong style="color:var(--text);">รวมทั้งหมด: ${totalCost.toLocaleString()} บาท</strong>
+    </div>`;
+}
+
+function saveSettings() {
+  state.settings = {
+    courtFee: parseFloat(document.getElementById('setting-court-fee').value) || 0,
+    shuttleFee: parseFloat(document.getElementById('setting-shuttle-fee').value) || 0,
+    shuttlesUsed: parseInt(document.getElementById('setting-shuttles-used').value) || 0
+  };
+  saveState();
+  renderCostSummary();
+}
+
+function resetAll() {
+  if (!confirm('รีเซ็ตผู้เล่นทั้งหมด? คอร์ดและการตั้งค่าจะยังอยู่')) return;
+  state.players = [];
+  state.courtAssignments = {};
+  state.pairHistory = {};
+  saveState();
+  renderAll();
+  showToast('✅ รีเซ็ตเสร็จแล้ว');
+}
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => showToast('📋 คัดลอกแล้ว!'));
+}
+
+// ===== TAB =====
+function switchTab(tabId) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const tabs = ['tab-courts', 'tab-players', 'tab-settings'];
+    t.classList.toggle('active', tabs[i] === tabId);
+  });
+  document.querySelectorAll('.tab-content').forEach(t => {
+    t.classList.toggle('active', t.id === tabId);
+  });
+  if (tabId === 'tab-courts') { renderAdminCourts(); renderCourtToggles(); }
+  if (tabId === 'tab-players') renderAllPlayersList();
+  if (tabId === 'tab-settings') { renderCostSummary(); document.getElementById('share-url').textContent = window.location.href; }
+}
+
+// ===== PIN =====
+function showAdminLogin() {
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-modal').classList.add('open');
+}
+
+function closePinModal() {
+  document.getElementById('pin-modal').classList.remove('open');
+  pinBuffer = '';
+}
+
+function pinPress(key) {
+  if (key === 'clear') { pinBuffer = ''; updatePinDots(); return; }
+  if (key === 'back') { pinBuffer = pinBuffer.slice(0, -1); updatePinDots(); return; }
+  if (pinBuffer.length >= 4) return;
+  pinBuffer += key;
+  updatePinDots();
+  if (pinBuffer.length === 4) {
+    setTimeout(() => {
+      if (pinBuffer === PIN) {
+        closePinModal();
+        showAdmin();
+      } else {
+        document.getElementById('pin-error').textContent = '❌ PIN ไม่ถูกต้อง';
+        pinBuffer = '';
+        updatePinDots();
+      }
+    }, 150);
+  }
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('d' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+
+function showAdmin() {
+  document.getElementById('page-main').classList.remove('active');
+  document.getElementById('page-admin').classList.add('active');
+  renderAdminCourts();
+  renderAllPlayersList();
+  renderCourtToggles();
+  renderCostSummary();
+  document.getElementById('share-url').textContent = window.location.href;
+}
+
+function logout() {
+  document.getElementById('page-admin').classList.remove('active');
+  document.getElementById('page-main').classList.add('active');
+  renderAll();
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
